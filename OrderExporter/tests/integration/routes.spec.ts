@@ -1,10 +1,12 @@
-import { expect } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals';
 import request from 'supertest';
 import app from '../../src/app';
 import * as jobController from '../../src/controllers/job.controller';
 import { readConfiguration } from '../../src/utils/config.utils';
 
+
 jest.mock('../../src/utils/config.utils');
+
 describe('Testing router', () => {
   beforeEach(() => {
     (readConfiguration as jest.Mock).mockClear();
@@ -18,7 +20,7 @@ describe('Testing router', () => {
   });
 });
 describe('unexpected error', () => {
-  let postMock: jest.SpyInstance;
+  let postMock:any;
 
   beforeEach(() => {
     // Mock the post method to throw an error

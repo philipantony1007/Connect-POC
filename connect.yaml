@@ -3,7 +3,7 @@ deployAs:
     applicationType: job
     endpoint: /job
     properties:
-      schedule: "30 4 * * *"
+      schedule: "30 5 * * *"
     configuration:
       standardConfiguration:
         - key: CTP_REGION

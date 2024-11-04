@@ -1,5 +1,3 @@
-// src/config/aws.config.ts
-
 import { S3Client } from '@aws-sdk/client-s3';
 import dotenv from 'dotenv';
 import CustomError from '../errors/custom.error';
@@ -17,7 +15,6 @@ export const s3Client = new S3Client({
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    // Remove sessionToken if not used
   }
 });
 
