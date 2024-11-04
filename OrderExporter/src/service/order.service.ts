@@ -1,4 +1,4 @@
-import { LineItem, Order, OrderPagedQueryResponse } from '@commercetools/platform-sdk';
+import { LineItem, Order } from '@commercetools/platform-sdk';
 import { logger } from '../utils/logger.utils';
 import { NoOrdersFoundError } from '../errors/extendedCustom.error';
 
