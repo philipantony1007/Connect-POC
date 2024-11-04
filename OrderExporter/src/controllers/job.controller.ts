@@ -14,8 +14,10 @@ export const post = async (_request: Request, response: Response) => {
 
     const orders: OrderPagedQueryResponse = await allOrders({ sort: ['lastModifiedAt'] });
 
+    
     // Process orders to get SKU associations
     const associations = mapOrderAssociations(orders);
+
     
     const isUploaded = await uploadToS3({ associations });
     
@@ -26,6 +28,7 @@ export const post = async (_request: Request, response: Response) => {
     }
   } catch (error) {
     if (error instanceof CustomError) {
+      logger.error('Error 0 orders found:');
       throw error;
     }
     throw new CustomError(500, 'Internal Server Error');

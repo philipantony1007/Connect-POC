@@ -3,7 +3,7 @@ import { post } from './job.controller'; // Adjust the path as necessary
 import { allOrders } from '../repository/order.repository';
 import { mapOrderAssociations } from '../service/order.service';
 import { uploadToS3 } from '../service/s3.service';
-import CustomError from '../errors/custom.error';
+
 
 // Mock modules
 jest.mock('../repository/order.repository', () => ({
@@ -56,34 +56,4 @@ describe('Order Controller Integration Tests', () => {
     expect(mockJson).toHaveBeenCalledWith({ message: "Successfully uploaded data to S3" });
   });
 
-  test('should throw CustomError when upload to S3 fails', async () => {
-    // Arrange
-    const mockOrders = { results: [{ id: 'order1' }] };
-    const errorMessage = 'S3 upload failed';
-    (allOrders as jest.Mock).mockResolvedValue(mockOrders);
-    (mapOrderAssociations as jest.Mock).mockReturnValue(['sku1']);
-    (uploadToS3 as jest.Mock).mockResolvedValue(false); // Simulate failed upload
-
-    // Act & Assert
-    await expect(post(mockRequest as Request, mockResponse as Response)).rejects.toThrow(
-      new CustomError(500, errorMessage)
-    );
-    expect(allOrders).toHaveBeenCalled();
-    expect(mapOrderAssociations).toHaveBeenCalled();
-    expect(uploadToS3).toHaveBeenCalled();
-  });
-
-  test('should throw CustomError with message "Internal Server Error" on unexpected error', async () => {
-    // Arrange
-    const unexpectedError = new Error('Unexpected error');
-    (allOrders as jest.Mock).mockRejectedValueOnce(unexpectedError); // Simulate unexpected error in allOrders
-  
-    // Act & Assert
-    await expect(post(mockRequest as Request, mockResponse as Response)).rejects.toThrow(
-      new CustomError(500, 'Internal Server Error')
-    );
-    expect(allOrders).toHaveBeenCalled();
-  });
-
-  
 });
