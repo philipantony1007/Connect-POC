@@ -2,7 +2,7 @@ import CustomError from '../errors/custom.error';
 
 export class NoOrdersFoundError extends CustomError {
   constructor() {
-    super(404, 'No orders found');
+    super(404, 'No orders found, cron job skipped, no data uploaded to S3');
   }
 }
 
