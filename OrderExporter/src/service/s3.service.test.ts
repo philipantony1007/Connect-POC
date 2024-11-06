@@ -1,5 +1,3 @@
-// event/src/service/s3.service.test.ts
-
 import { uploadToS3 } from './s3.service';
 import { s3Client } from '../utils/aws.utils';
 import { PutObjectCommand } from '@aws-sdk/client-s3';

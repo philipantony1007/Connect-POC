@@ -1,5 +1,4 @@
-import { LineItem, Order, OrderPagedQueryResponse } from '@commercetools/platform-sdk';
-import { logger } from '../utils/logger.utils';
+import { LineItem, Order } from '@commercetools/platform-sdk';
 import { NoOrdersFoundError } from '../errors/extendedCustom.error';
 
 
@@ -13,10 +12,7 @@ export const mapOrderAssociations = (orders: any): string[][] => {
         associations.push(skuList);
       }
     });
-    
-    logger.info(`Successfully processed ${orders.total} orders`);
   } else {
-    logger.info('No orders found');
     throw new NoOrdersFoundError();
   }
 

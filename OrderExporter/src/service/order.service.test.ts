@@ -1,5 +1,5 @@
 import { mapOrderAssociations } from './order.service';
-import { logger } from '../utils/logger.utils';
+import { NoOrdersFoundError } from '../errors/extendedCustom.error';
 
 jest.mock('../utils/logger.utils', () => ({
   logger: {
@@ -41,11 +41,9 @@ describe('mapOrderAssociations', () => {
       ['SKU123', 'SKU456'],
       ['SKU789'],
     ]);
-    expect(logger.info).toHaveBeenCalledWith('Successfully processed 2 orders');
   });
 
-  // it('should throw NoOrdersFoundError when no orders are found', () => {
-  //   expect(() => mapOrderAssociations(mockOrdersEmpty)).toThrow(NoOrdersFoundError);
-  //   expect(logger.info).toHaveBeenCalledWith('No orders found, cron job skipped, no data uploaded to S3');
-  // });
+  it('should throw NoOrdersFoundError when no orders are found', () => {
+    expect(() => mapOrderAssociations(mockOrdersEmpty)).toThrow(NoOrdersFoundError);
+  });
 });
