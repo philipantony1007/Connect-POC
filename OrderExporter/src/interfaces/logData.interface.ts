@@ -1,12 +1,9 @@
 export interface ProcessLogData {
-    timestamp: string;
-    status: 'success' | 'error';
-    message: string;
-    details: {
-      ordersProcessedStatus: boolean;  // This is now always included
-      ordersProcessed?: number;
-      s3UploadStatus: boolean;
-      duration: number;  // Duration in milliseconds
-    };
-  }
-  
+  timestamp: string;
+  status: string;
+  message: string;
+  details: {
+    totalOrdersProcessed?: number; // Optional, to be included only when successful
+    durationInMilliseconds: number; // Renamed for clarity
+  };
+}

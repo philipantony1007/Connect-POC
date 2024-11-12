@@ -11,4 +11,4 @@ const getOrderSet: GetFunction<OrderPagedQueryResponse> = async (queryArgs) => {
   return body;
 };
 
-export const allOrders: GetFunction<OrderPagedQueryResponse> = getAll(getOrderSet);
+export const fetchOrders: GetFunction<OrderPagedQueryResponse> = getAll(getOrderSet);
