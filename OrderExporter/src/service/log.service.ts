@@ -13,7 +13,7 @@ export const prepareLogData = (
   ): ProcessLogData => {
     const logData: ProcessLogData = {
       timestamp: new Date().toISOString(),
-      status: isOrderAssociationUploadSuccessful && isCsvUploadSuccessful ? 'success' : 'error',
+      status: isOrderAssociationUploadSuccessful && isCsvUploadSuccessful ? 'success' : 'failed',
       message,
       details: {
         durationInMilliseconds: Date.now() - startTime, // Ensure duration is always included
