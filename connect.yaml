@@ -1,5 +1,5 @@
 deployAs:
-  - name: OrderExporter
+  - name: DataExporter
     applicationType: job
     endpoint: /job
     properties:

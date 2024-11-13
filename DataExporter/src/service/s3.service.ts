@@ -42,6 +42,6 @@ export async function UploadCSTrainingData(order: any): Promise<boolean> {
 }
 
 export async function UploadCBFTrainingData(product: any): Promise<boolean> {
-  return uploadToS3(product, 'collaborative-filering');
+  return uploadToS3(product, 'content-based-filtering');
 }
 
