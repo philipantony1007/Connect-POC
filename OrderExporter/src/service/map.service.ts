@@ -2,18 +2,16 @@ import { OrderPagedQueryResponse, ProductPagedQueryResponse } from "@commercetoo
 import { mapCustomer } from "./customer.service";
 import { mapProductData } from "./product.service";
 
-function mapCombinedData(products: ProductPagedQueryResponse, orders: OrderPagedQueryResponse): any {
+function mapCFTrainingData(products: ProductPagedQueryResponse, orders: OrderPagedQueryResponse): any {
   // Get mapped customers data
-  const customers = mapCustomer(orders);
-
-  // Get mapped products data
+  const customersData = mapCustomer(orders);
   const productsData = mapProductData(products);
 
   // Combine products and customers data
   return {
     products: productsData.products,
-    customers
+    customers:customersData.customers
   };
 }
 
-export { mapCombinedData };
+export { mapCFTrainingData };

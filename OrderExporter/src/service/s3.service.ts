@@ -40,7 +40,7 @@ export async function UploadCSTrainingData(order: any): Promise<boolean> {
   return uploadToS3(order, 'customer-segmentation');
 }
 
-export async function UploadCBFTrainingData(product: any): Promise<boolean> {
+export async function UploadCFTrainingData(product: any): Promise<boolean> {
   return uploadToS3(product, 'collaborative-filering');
 }
 

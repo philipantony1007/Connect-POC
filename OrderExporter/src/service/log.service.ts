@@ -5,37 +5,39 @@ import { writeLogToCommercetools } from '../repository/customobject.repository';
 const CUSTOM_OBJECT_CONTAINER = 'cron-job-log';
 
 export const prepareLogData = (
-    message: string,
-    totalOrdersProcessed: number,
-    startTime: number,
-    isOrderAssociationUploadSuccessful: boolean = true,
-    isCsvUploadSuccessful: boolean = true
-  ): ProcessLogData => {
-    const logData: ProcessLogData = {
-      timestamp: new Date().toISOString(),
-      status: isOrderAssociationUploadSuccessful && isCsvUploadSuccessful ? 'success' : 'failed',
-      message,
-      details: {
-        durationInMilliseconds: Date.now() - startTime, // Ensure duration is always included
-      },
-    };
-  
-    // Only include totalOrdersProcessed if upload was successful
-    if (isOrderAssociationUploadSuccessful && isCsvUploadSuccessful) {
-      logData.details.totalOrdersProcessed = totalOrdersProcessed;
-    }
-  
-    return logData;
+  message: string,
+  totalOrdersProcessed: number,
+  startTime: number,
+  isMBAUploadSuccessful: boolean = true,
+  isCSUploadSuccessful: boolean = true,
+  isCFUploadSuccessful: boolean = true
+): ProcessLogData => {
+  const logData: ProcessLogData = {
+    timestamp: new Date().toISOString(),
+    status: isMBAUploadSuccessful && isCSUploadSuccessful && isCFUploadSuccessful ? 'success' : 'failed',
+    message,
+    details: {
+      durationInMilliseconds: Date.now() - startTime, // Ensure duration is always included
+    },
   };
-  
+
+  // Only include totalOrdersProcessed if all uploads were successful
+  if (isMBAUploadSuccessful && isCSUploadSuccessful && isCFUploadSuccessful) {
+    logData.details.totalOrdersProcessed = totalOrdersProcessed;
+  }
+
+  return logData;
+};
+
 export const writeLog = async (
   message: string,
   totalOrdersProcessed: number,
   startTime: number,
-  isOrderAssociationUploadSuccessful: boolean = true,
-  isCsvUploadSuccessful: boolean = true
+  isMBAUploadSuccessful: boolean = true,
+  isCSUploadSuccessful: boolean = true,
+  isCFUploadSuccessful: boolean = true
 ): Promise<void> => {
-  const logData = prepareLogData(message, totalOrdersProcessed, startTime, isOrderAssociationUploadSuccessful, isCsvUploadSuccessful);
+  const logData = prepareLogData(message, totalOrdersProcessed, startTime, isMBAUploadSuccessful, isCSUploadSuccessful, isCFUploadSuccessful);
 
   const customObjectDraft: CustomObjectDraft = {
     container: CUSTOM_OBJECT_CONTAINER,

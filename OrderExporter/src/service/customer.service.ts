@@ -5,7 +5,7 @@ function mapCustomer(orders: OrderPagedQueryResponse): any {
 
   // Iterate through the orders
   orders.results.forEach((order) => {
-    const customerEmail = order.customerEmail; // Assuming customer email is stored in `order.customerEmail`
+    const customerEmail = order.customerEmail;
     
     // Skip orders without a customer email
     if (!customerEmail) return;
@@ -13,7 +13,7 @@ function mapCustomer(orders: OrderPagedQueryResponse): any {
     // Get the list of SKUs for this order, filtering out undefined values
     const skus = order.lineItems
       .map((lineItem) => lineItem.variant.sku)
-      .filter((sku): sku is string => sku !== undefined); // Type guard to ensure all items are strings
+      .filter((sku): sku is string => sku !== undefined);
 
     // Add to the customers object
     if (!customers[customerEmail]) {
@@ -24,10 +24,8 @@ function mapCustomer(orders: OrderPagedQueryResponse): any {
     customers[customerEmail].Orders.push(...skus);
   });
 
-  // Log the grouped customers with their SKUs
-  console.log("Customers grouped by email with SKUs:", customers);
-
-  return customers;
+  // Return the customers data under a `customers` property
+  return { customers };
 }
 
 export { mapCustomer };

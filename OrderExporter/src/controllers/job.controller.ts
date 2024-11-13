@@ -3,64 +3,66 @@ import CustomError from '../errors/custom.error';
 import { logger } from '../utils/logger.utils';
 import { fetchOrders } from '../repository/order.repository';
 import { mapOrderForMBA, mapOrderForCS } from '../service/order.service';
-import { UploadCBFTrainingData, UploadCSTrainingData, uploadMBATrainingData } from '../service/s3.service';
+import { UploadCFTrainingData, UploadCSTrainingData, uploadMBATrainingData } from '../service/s3.service';
 import { OrderPagedQueryResponse, ProductPagedQueryResponse } from '@commercetools/platform-sdk';
 import { writeLog } from '../service/log.service';
 import { fetchProducts } from '../repository/product.repository';
-import { mapProductData } from '../service/product.service';
-import { mapCustomer } from '../service/customer.service';
-import { mapCombinedData } from '../service/map.service';
+import { mapCFTrainingData } from '../service/map.service';
 
 export const post = async (_request: Request, response: Response) => {
+  // Record the start time for processing
   const startTime = Date.now();
 
   try {
-    // Fetch orders
+    // Fetch orders from the repository, sorted by last modified date
     logger.info("Fetching orders...");
     const orders: OrderPagedQueryResponse = await fetchOrders({ sort: ['lastModifiedAt'] });
-    //const customers = mapCustomer(orders)
-    const product:ProductPagedQueryResponse = await fetchProducts({ sort: ['lastModifiedAt'] });
-    const mappeddata:any = mapCombinedData(product,orders)
-    const isCBFSuccessful = await UploadCBFTrainingData(mappeddata);
 
+    // Fetch products from the repository, sorted by last modified date
+    logger.info("Fetching products...");
+    const products: ProductPagedQueryResponse = await fetchProducts({ sort: ['lastModifiedAt'] });
 
+    // Map orders and products data for collaborative filtering (CF)
+    const collaborativeFilteringData: any = mapCFTrainingData(products, orders);
+    const isCFUploadSuccessful = await UploadCFTrainingData(collaborativeFilteringData);
 
+    // Map orders for Market Basket Analysis (MBA)
+    const orderAssociationsForMBA = mapOrderForMBA(orders);
+    const isMBAUploadSuccessful = await uploadMBATrainingData({ associations: orderAssociationsForMBA });
 
-    // Map orders to necessary formats
-    // const orderAssociations = mapOrderForMBA(orders);
-    // const isJsonUploadSuccessful = await uploadMBATrainingData({ associations: orderAssociations });
+    // Map orders for customer segmentation (CS)
+    const customerSegmentationOrders = mapOrderForCS(orders);
+    const isCSUploadSuccessful = await UploadCSTrainingData(customerSegmentationOrders);
 
-  
-
-    // const CBFOrder = mapOrderForCS(orders);
-    // const isCsvUploadSuccessful = await UploadCSTrainingData(CBFOrder);
-
-    // Log upload success or failure
-    // const totalOrdersProcessed = orders.results.length;
-    // await writeLog(
-    //   'Uploaded Order Associations JSON and Order CSV data to S3',
-    //   totalOrdersProcessed,
-    //   startTime,
-    //   isJsonUploadSuccessful,
-    //   isCsvUploadSuccessful
-    // );
-
-    return response.status(200).json(
-      isCBFSuccessful
+    // Log the results of the upload processes
+    const totalOrdersProcessed = orders.results.length;
+    await writeLog(
+      'Uploaded order associations JSON, CF JSON, and CS CSV data to S3',
+      totalOrdersProcessed,
+      startTime,
+      isMBAUploadSuccessful,
+      isCSUploadSuccessful,
+      isCFUploadSuccessful
     );
+
+    // Return success response with a message
+    return response.status(200).json({ message: "Data upload successful" });
 
   } catch (error) {
+    // Determine the error message based on whether it's a CustomError or a generic error
     const errorMessage = error instanceof CustomError ? error.message : 'Internal Server Error';
 
-    // Log error with both upload statuses set to false
+    // Log the error and set upload statuses to false
     await writeLog(
       errorMessage,
-      0,  // No orders processed on error
+      0,  // No orders processed in case of error
       startTime,
-      false,  // JSON upload failure
-      false   // CSV upload failure
+      false,  // MBA upload failure
+      false,  // CS upload failure
+      false   // CF upload failure
     );
 
+    // Throw the error if it's a CustomError, else throw a generic error
     if (error instanceof CustomError) {
       throw error;
     }
