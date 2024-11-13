@@ -3,11 +3,11 @@ import CustomError from '../errors/custom.error';
 import { logger } from '../utils/logger.utils';
 import { fetchOrders } from '../repository/order.repository';
 import { mapOrderForMBA, mapOrderForCS } from '../service/order.service';
-import { UploadCFTrainingData, UploadCSTrainingData, uploadMBATrainingData } from '../service/s3.service';
+import { UploadCBFTrainingData, UploadCSTrainingData, uploadMBATrainingData } from '../service/s3.service';
 import { OrderPagedQueryResponse, ProductPagedQueryResponse } from '@commercetools/platform-sdk';
 import { writeLog } from '../service/log.service';
 import { fetchProducts } from '../repository/product.repository';
-import { mapCFTrainingData } from '../service/map.service';
+import { mapCBFTrainingData } from '../service/map.service';
 
 export const post = async (_request: Request, response: Response) => {
   // Record the start time for processing
@@ -22,9 +22,9 @@ export const post = async (_request: Request, response: Response) => {
     logger.info("Fetching products...");
     const products: ProductPagedQueryResponse = await fetchProducts({ sort: ['lastModifiedAt'] });
 
-    // Map orders and products data for collaborative filtering (CF)
-    const collaborativeFilteringData: any = mapCFTrainingData(products, orders);
-    const isCFUploadSuccessful = await UploadCFTrainingData(collaborativeFilteringData);
+    // Map orders and products data for content-based-filtering (CBF)
+    const contentBasedFilteringData: any = mapCBFTrainingData(products, orders);
+    const isCBUploadSuccessful = await UploadCBFTrainingData(contentBasedFilteringData);
 
     // Map orders for Market Basket Analysis (MBA)
     const orderAssociationsForMBA = mapOrderForMBA(orders);
@@ -37,12 +37,12 @@ export const post = async (_request: Request, response: Response) => {
     // Log the results of the upload processes
     const totalOrdersProcessed = orders.results.length;
     await writeLog(
-      'Uploaded order associations JSON, CF JSON, and CS CSV data to S3',
+      'Uploaded Market Basket Analysis (MBA) data, Content-Based Filtering (CBF) data, and Customer Segmentation (CS) JSON files to S3 successfully',
       totalOrdersProcessed,
       startTime,
       isMBAUploadSuccessful,
       isCSUploadSuccessful,
-      isCFUploadSuccessful
+      isCBUploadSuccessful
     );
 
     // Return success response with a message
@@ -59,7 +59,7 @@ export const post = async (_request: Request, response: Response) => {
       startTime,
       false,  // MBA upload failure
       false,  // CS upload failure
-      false   // CF upload failure
+      false   // CBF upload failure
     );
 
     // Throw the error if it's a CustomError, else throw a generic error

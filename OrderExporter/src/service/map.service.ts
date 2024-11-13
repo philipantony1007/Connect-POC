@@ -2,7 +2,7 @@ import { OrderPagedQueryResponse, ProductPagedQueryResponse } from "@commercetoo
 import { mapCustomer } from "./customer.service";
 import { mapProductData } from "./product.service";
 
-function mapCFTrainingData(products: ProductPagedQueryResponse, orders: OrderPagedQueryResponse): any {
+function mapCBFTrainingData(products: ProductPagedQueryResponse, orders: OrderPagedQueryResponse): any {
   // Get mapped customers data
   const customersData = mapCustomer(orders);
   const productsData = mapProductData(products);
@@ -14,4 +14,4 @@ function mapCFTrainingData(products: ProductPagedQueryResponse, orders: OrderPag
   };
 }
 
-export { mapCFTrainingData };
+export { mapCBFTrainingData };

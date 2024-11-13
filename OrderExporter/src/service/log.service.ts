@@ -8,13 +8,13 @@ export const prepareLogData = (
   message: string,
   totalOrdersProcessed: number,
   startTime: number,
-  isMBAUploadSuccessful: boolean = true,
-  isCSUploadSuccessful: boolean = true,
-  isCFUploadSuccessful: boolean = true
+  isMBAUploadSuccessful: boolean = false,
+  isCSUploadSuccessful: boolean = false,
+  isCBFUploadSuccessful: boolean = false
 ): ProcessLogData => {
   const logData: ProcessLogData = {
     timestamp: new Date().toISOString(),
-    status: isMBAUploadSuccessful && isCSUploadSuccessful && isCFUploadSuccessful ? 'success' : 'failed',
+    status: isMBAUploadSuccessful && isCSUploadSuccessful && isCBFUploadSuccessful ? 'success' : 'failed',
     message,
     details: {
       durationInMilliseconds: Date.now() - startTime, // Ensure duration is always included
@@ -22,7 +22,7 @@ export const prepareLogData = (
   };
 
   // Only include totalOrdersProcessed if all uploads were successful
-  if (isMBAUploadSuccessful && isCSUploadSuccessful && isCFUploadSuccessful) {
+  if (isMBAUploadSuccessful && isCSUploadSuccessful && isCBFUploadSuccessful) {
     logData.details.totalOrdersProcessed = totalOrdersProcessed;
   }
 
@@ -33,11 +33,11 @@ export const writeLog = async (
   message: string,
   totalOrdersProcessed: number,
   startTime: number,
-  isMBAUploadSuccessful: boolean = true,
-  isCSUploadSuccessful: boolean = true,
-  isCFUploadSuccessful: boolean = true
+  isMBAUploadSuccessful: boolean = false,
+  isCSUploadSuccessful: boolean = false,
+  isCBFUploadSuccessful: boolean = false
 ): Promise<void> => {
-  const logData = prepareLogData(message, totalOrdersProcessed, startTime, isMBAUploadSuccessful, isCSUploadSuccessful, isCFUploadSuccessful);
+  const logData = prepareLogData(message, totalOrdersProcessed, startTime, isMBAUploadSuccessful, isCSUploadSuccessful, isCBFUploadSuccessful);
 
   const customObjectDraft: CustomObjectDraft = {
     container: CUSTOM_OBJECT_CONTAINER,

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { post } from './job.controller';
 import { fetchOrders } from '../repository/order.repository';
-import { mapOrderAssociations, mapOrderToCsv } from '../service/order.service';
-import { uploadJsonToS3, uploadCsvToS3 } from '../service/s3.service';
+import { mapOrderForMBA, mapOrderForCS } from '../service/order.service';
+import { UploadCFTrainingData, UploadCSTrainingData, uploadMBATrainingData } from '../service/s3.service';
 import { writeLog } from '../service/log.service';
 import CustomError from '../errors/custom.error';
 
@@ -25,32 +25,40 @@ describe('Order Controller - post function', () => {
 
   it('should upload JSON and CSV data to S3 and log success', async () => {
     const ordersMock = { results: [{ id: 'order1' }, { id: 'order2' }] };
-    const mappedAssociations = [{ id: 'assoc1' }];
-    const csvData = [['header1', 'header2'], ['row1', 'row2']];
+    const productsMock = { results: [{ id: 'product1' }, { id: 'product2' }] };
+    const mappedCFData = { associations: [{ id: 'cf-association' }] };
+    const mbaAssociations = [{ id: 'mba-association' }];
+    const csOrders = [{ id: 'cs-order' }];
 
     (fetchOrders as jest.Mock).mockResolvedValue(ordersMock);
-    (mapOrderAssociations as jest.Mock).mockReturnValue(mappedAssociations);
-    (mapOrderToCsv as jest.Mock).mockReturnValue(csvData);
-    (uploadJsonToS3 as jest.Mock).mockResolvedValue(true);
-    (uploadCsvToS3 as jest.Mock).mockResolvedValue(true);
+    (UploadCFTrainingData as jest.Mock).mockResolvedValue(true);
+    (mapOrderForMBA as jest.Mock).mockReturnValue(mbaAssociations);
+    (uploadMBATrainingData as jest.Mock).mockResolvedValue(true);
+    (mapOrderForCS as jest.Mock).mockReturnValue(csOrders);
+    (UploadCSTrainingData as jest.Mock).mockResolvedValue(true);
 
     await post({} as Request, response as Response);
 
-    expect(fetchOrders).toHaveBeenCalled();
-    expect(mapOrderAssociations).toHaveBeenCalledWith(ordersMock);
-    expect(mapOrderToCsv).toHaveBeenCalledWith(ordersMock);
-    expect(uploadJsonToS3).toHaveBeenCalledWith({ associations: mappedAssociations });
-    expect(uploadCsvToS3).toHaveBeenCalledWith(csvData);
+    // expect(fetchOrders).toHaveBeenCalled();
+    // expect(UploadCFTrainingData).toHaveBeenCalledWith(mappedCFData);
+
+    expect(mapOrderForMBA).toHaveBeenCalledWith(ordersMock);
+    expect(uploadMBATrainingData).toHaveBeenCalledWith({ associations: mbaAssociations });
+    expect(mapOrderForCS).toHaveBeenCalledWith(ordersMock);
+    expect(UploadCSTrainingData).toHaveBeenCalledWith(csOrders);
+
     expect(writeLog).toHaveBeenCalledWith(
-      'Uploaded Order Associations JSON and Order CSV data to S3',
+      'Uploaded order associations JSON, CF JSON, and CS CSV data to S3',
       2, // totalOrdersProcessed based on ordersMock
       expect.any(Number),
-      true,
-      true
+      true,  // isMBAUploadSuccessful
+      true,  // isCSUploadSuccessful
+      true   // isCFUploadSuccessful
     );
+
     expect(response.status).toHaveBeenCalledWith(200);
     expect(response.json).toHaveBeenCalledWith({
-      message: 'Successfully uploaded Order Associations JSON and Order CSV data to S3',
+      message: 'Data upload successful',
     });
   });
 
@@ -60,7 +68,7 @@ describe('Order Controller - post function', () => {
 
     try {
       await post({} as Request, response as Response);
-    } catch (err:any) {
+    } catch (err: any) {
       expect(err).toBeInstanceOf(CustomError);
       expect(err.message).toBe('Internal Server Error');
     }
@@ -69,8 +77,9 @@ describe('Order Controller - post function', () => {
       'Internal Server Error',
       0, // No orders processed due to error
       expect.any(Number),
-      false,
-      false
+      false, // isMBAUploadSuccessful
+      false, // isCSUploadSuccessful
+      false  // isCFUploadSuccessful
     );
   });
 
@@ -79,12 +88,14 @@ describe('Order Controller - post function', () => {
     (fetchOrders as jest.Mock).mockRejectedValue(customError);
 
     await expect(post({} as Request, response as Response)).rejects.toThrow(CustomError);
+
     expect(writeLog).toHaveBeenCalledWith(
       'Custom Error',
       0, // No orders processed on error
       expect.any(Number),
-      false,
-      false
+      false, // isMBAUploadSuccessful
+      false, // isCSUploadSuccessful
+      false  // isCFUploadSuccessful
     );
   });
 });

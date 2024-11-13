@@ -8,6 +8,7 @@ async function uploadToS3(data: any, folder: string): Promise<boolean> {
   try {
     const timestamp = new Date().toISOString();
     const filename = `${timestamp}.json`;
+    const bucketname = S3_CONFIG.BUCKET_NAME
 
     // Set content type for JSON
     const contentType = 'application/json';
@@ -15,7 +16,7 @@ async function uploadToS3(data: any, folder: string): Promise<boolean> {
 
     // Create and send the S3 command to upload the data
     const command = new PutObjectCommand({
-      Bucket: S3_CONFIG.BUCKET_NAME,
+      Bucket: bucketname,
       Key: `${folder}/${filename}`,
       Body: body,
       ContentType: contentType,
@@ -40,7 +41,7 @@ export async function UploadCSTrainingData(order: any): Promise<boolean> {
   return uploadToS3(order, 'customer-segmentation');
 }
 
-export async function UploadCFTrainingData(product: any): Promise<boolean> {
+export async function UploadCBFTrainingData(product: any): Promise<boolean> {
   return uploadToS3(product, 'collaborative-filering');
 }
 
