@@ -1,18 +1,21 @@
 import { LineItem, Order, OrderPagedQueryResponse } from '@commercetools/platform-sdk';
 import { NoOrdersFoundError } from '../errors/extendedCustom.error';
+import { CSOrderMapping, MBAOrderAssociations } from '../types/index.types';
 
-export const mapOrderForMBA = (orders: OrderPagedQueryResponse): string[][] => {
-  const associations: string[][] = [];
+
+export const mapOrderForMBA = (orders: OrderPagedQueryResponse): MBAOrderAssociations => {
+  const associations: MBAOrderAssociations = [];
 
   if (orders.results?.length > 0) {
+    // Iterate over each order and extract line item SKUs
     orders.results.forEach((order: Order) => {
       const skuList = extractSkusFromLineItems(order.lineItems);
       if (skuList.length > 0) {
-        associations.push(skuList);
+        associations.push(skuList);  // Push the extracted SKUs into the associations array
       }
     });
   } else {
-    throw new NoOrdersFoundError();
+    throw new NoOrdersFoundError();  // Throw error if no orders are found
   }
 
   return associations;
@@ -20,18 +23,18 @@ export const mapOrderForMBA = (orders: OrderPagedQueryResponse): string[][] => {
 
 const extractSkusFromLineItems = (lineItems: LineItem[]): string[] => {
   if (!lineItems?.length) {
-    return [];
+    return [];  // Return empty array if no line items exist
   }
 
   return lineItems
-    .map((item) => item.variant?.sku)
-    .filter((sku): sku is string => sku !== undefined);
+    .map((item) => item.variant?.sku)  // Extract SKU from variant
+    .filter((sku): sku is string => sku !== undefined);  // Filter out undefined values
 };
 
 
 
 
-export const mapOrderForCS = (orders: OrderPagedQueryResponse): Record<string, { Quantity: string, UnitPrice: string, TaxAmount: string }[]> => {
+export const mapOrderForCS = (orders: OrderPagedQueryResponse): CSOrderMapping => {
   const associations: Record<string, { Quantity: string, UnitPrice: string, TaxAmount: string }[]> = {};
 
   if (orders.results?.length > 0) {

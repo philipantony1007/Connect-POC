@@ -8,6 +8,7 @@ import { OrderPagedQueryResponse, ProductPagedQueryResponse } from '@commercetoo
 import { writeLog } from '../service/log.service';
 import { fetchProducts } from '../repository/product.repository';
 import { mapCBFTrainingData } from '../service/map.service';
+import { CBFTrainingData, CSOrderMapping, MBAOrderAssociations } from '../types/index.types';
 
 export const post = async (_request: Request, response: Response) => {
   // Record the start time for processing
@@ -23,15 +24,15 @@ export const post = async (_request: Request, response: Response) => {
     const products: ProductPagedQueryResponse = await fetchProducts({ sort: ['lastModifiedAt'] });
 
     // Map orders and products data for content-based-filtering (CBF)
-    const contentBasedFilteringData: any = mapCBFTrainingData(products, orders);
+    const contentBasedFilteringData: CBFTrainingData = mapCBFTrainingData(products, orders);
     const isCBUploadSuccessful = await UploadCBFTrainingData(contentBasedFilteringData);
 
     // Map orders for Market Basket Analysis (MBA)
-    const orderAssociationsForMBA = mapOrderForMBA(orders);
+    const orderAssociationsForMBA: MBAOrderAssociations = mapOrderForMBA(orders);
     const isMBAUploadSuccessful = await uploadMBATrainingData({ associations: orderAssociationsForMBA });
 
     // Map orders for customer segmentation (CS)
-    const customerSegmentationOrders = mapOrderForCS(orders);
+    const customerSegmentationOrders: CSOrderMapping = mapOrderForCS(orders);
     const isCSUploadSuccessful = await UploadCSTrainingData(customerSegmentationOrders);
 
     // Log the results of the upload processes

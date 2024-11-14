@@ -1,6 +1,7 @@
 import { OrderPagedQueryResponse } from "@commercetools/platform-sdk";
+import { CustomerData } from "../types/index.types";
 
-function mapCustomer(orders: OrderPagedQueryResponse): any {
+function mapCustomer(orders: OrderPagedQueryResponse): CustomerData {
   const customers: { [email: string]: { Orders: string[] } } = {};
 
   // Iterate through the orders

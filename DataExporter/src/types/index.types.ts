@@ -72,3 +72,53 @@ export type ValidatorFunction = (o: object) => boolean;
 export type Wrapper = (
   validator: ValidatorFunction
 ) => (value: object) => boolean;
+
+
+export type MBAOrderAssociations = string[][];
+
+export interface CSOrderLineItem {
+    Quantity: string;
+    UnitPrice: string;
+    TaxAmount: string;
+}
+
+export type CSOrderMapping = Record<string, CSOrderLineItem[]>;
+
+export type CBFTrainingData = {
+    products: Array<{
+      variants: Array<{
+        sku: string;
+        attributes: Array<{
+          name: string;
+          value: string;
+        }>;
+      }>;
+    }>;
+    customers: {
+      [email: string]: {
+        Orders: string[]; // List of SKUs
+      };
+    };
+  };
+
+  
+  export type ProductData = {
+    products: Array<{
+      variants: Array<{
+        sku: string;
+        attributes: Array<{
+          name: string;
+          value: string;
+        }>;
+      }>;
+    }>;
+  };
+
+  export type CustomerData = {
+    customers: {
+      [email: string]: {
+        Orders: string[]; // List of SKUs
+      };
+    };
+  };
+  
