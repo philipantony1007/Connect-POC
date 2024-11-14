@@ -1,7 +1,7 @@
 import {  ProductPagedQueryResponse } from '@commercetools/platform-sdk';
 
 import { createApiRoot } from '../client/create.client';
-import { getAll } from './order.modifier';
+import { getAll } from './request.modifier';
 import { GetFunction } from '../types/index.types';
 
 const getAllProducts: GetFunction<ProductPagedQueryResponse> = async (queryArgs) => {
