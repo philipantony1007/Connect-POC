@@ -1,22 +1,27 @@
-<p align="center">
-  <a href="https://commercetools.com/">
-    <img alt="commercetools logo" src="https://unpkg.com/@commercetools-frontend/assets/logos/commercetools_primary-logo_horizontal_RGB.png">
-  </a></br>
-  <b>Connect Application Starter in TypeScript</b>
-</p>
+# DataExporter (Commercetools Connector)
 
-This is the `starter-typescript` template to develop [connect applications](https://marketplace.commercetools.com/) in TypeScript.
+**DataExporter** is a **Commercetools Connect application** designed to automate the extraction of training data from Commercetools and export it to **Amazon S3**. This data powers real-time analytical tasks such as Market Basket Analysis (MBA), Content-Based Filtering (CBF), and Customer Segmentation (CS) and integrates seamlessly with an external machine learning service for advanced insights.
 
-## Instructions
+## Overview
 
-Use `create-connect-app` cli with `starter-typescript` as `template` value to download this template repository to build the integration application , folder structure needs to be followed to ensure certification & deployment from commercetools connect team as stated [here](https://github.com/commercetools/connect-application-kit#readme) 
+DataExporter operates as a **job-type connector** that automates data extraction and processing on a fixed schedule. Specifically, it:
 
-## Architecture principles for building an connect application 
+1. **Extracts Orders and Products Data**
+   Retrieves key data related to orders and products from Commercetools for analytical purposes.
+2. **Processes Data for Analytical Tasks**
+   Formats and structures data for:
+   * **Market Basket Analysis (MBA)**: Uncovering patterns in product co-occurrence within customer orders.
+   * **Content-Based Filtering (CBF)**: Analyzing product attributes and customer preferences to deliver personalized recommendations.
+   * **Customer Segmentation (CS)**: Structuring customer purchase data for segmentation based on behavior and preferences.
+3. **Uploads Data to Amazon S3**
+   Saves the processed training data in JSON format to an AWS S3 bucket, providing accessible, real-time data for live analytics.
 
-* Connector solution should be lightweight in nature
-* Connector solutions should follow test driven development. Unit , Integration (& E2E) tests should be included and successfully passed to be used
-* No hardcoding of customer related config. If needed, values in an environment file which should not be maintained in repository
-* Connector solution should be supported with detailed documentation
-* Connectors should be point to point in nature, currently doesnt support any persistence capabilities apart from in memory persistence
-* Connector solution should use open source technologies, although connector itself can be private for specific customer(s)
-* Code should not contain console.log statements, use [the included logger](https://github.com/commercetools/merchant-center-application-kit/tree/main/packages-backend/loggers#readme) instead.
+## Key Features
+
+1. **Automatic Data Export to Amazon S3**
+   * Training data is automatically generated and uploaded to S3 in JSON format, ensuring easy access and integration for analytics.
+2. **Commercetools Cron Job Log**
+   * Logs for each cron job execution are stored as **custom objects** in Commercetools at `/custom-objects/cron-job-log`, capturing key job information and execution details.
+3. **Merchant Center Customization**
+   * A custom view in the Commercetools Merchant Center allows users to review the cron job logs and monitor the data export status.
+   * [View Merchant Center Customization Repository](https://github.com/philipantony1007/poc-ct-merchant-center.git)
