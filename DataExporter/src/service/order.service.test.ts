@@ -1,4 +1,4 @@
-import { LineItem, Order, OrderPagedQueryResponse } from '@commercetools/platform-sdk';
+import { Order, OrderPagedQueryResponse } from '@commercetools/platform-sdk';
 import { mapOrderForMBA, mapOrderForCS } from './order.service';
 import { NoOrdersFoundError } from '../errors/extendedCustom.error';
 import { CSOrderMapping, MBAOrderAssociations } from '../types/index.types';

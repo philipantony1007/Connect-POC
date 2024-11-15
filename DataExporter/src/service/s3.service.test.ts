@@ -1,4 +1,4 @@
-import { s3Client, S3_CONFIG } from '../utils/aws.utils';
+import { s3Client } from '../utils/aws.utils';
 import { uploadMBATrainingData, UploadCSTrainingData, UploadCBFTrainingData } from './s3.service';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { logger } from '../utils/logger.utils';
