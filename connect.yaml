@@ -24,13 +24,13 @@ deployAs:
           description: commercetools Composable Commerce client scope
           required: true
         - key: AWS_ACCESS_KEY_ID
-          description: key
+          description: AWS access key ID used to authenticate requests to Amazon S3
           required: true
         - key: AWS_SECRET_ACCESS_KEY
-          description: access key
+          description: Secret access key associated with the AWS access key ID for secure access.
           required: true
         - key: AWS_S3_BUCKET_NAME
-          description: bucketname
+          description: Name of the Amazon S3 bucket where data will be exported.
           required: true
 # inheritAs:
 #   configuration:
